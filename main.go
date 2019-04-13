@@ -100,8 +100,8 @@ func main() {
 	pflag.IntVarP(&port, "port", "p", 8080, "Server port")
 	pflag.Parse()
 
-	env := os.Getenv("ADAPTOR")
-	if len(uri) != 0 && len(env) != 0 {
+	env := os.Getenv("BRIDGE")
+	if len(uri) == 0 && len(env) != 0 {
 		uri = env
 	}
 	if b, err := NewJSONBridges(uri); err != nil {

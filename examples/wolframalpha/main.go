@@ -28,6 +28,7 @@ import (
 // }
 type WolframAlpha struct{}
 
+// Run implements Bridge Run for querying the Wolfram short answers API
 func (cc *WolframAlpha) Run(h *bridge.Helper) (interface{}, error) {
 	b, err := h.HTTPCallRawWithOpts(
 		http.MethodGet,
@@ -47,6 +48,7 @@ func (cc *WolframAlpha) Run(h *bridge.Helper) (interface{}, error) {
 	return map[string]string{"result": val[i], "full": string(b), "unit": val[len(val)-1]}, err
 }
 
+// Opts is the bridge.Bridge implementation
 func (cc *WolframAlpha) Opts() *bridge.Opts {
 	return &bridge.Opts{
 		Name:   "WolframAlpha",

@@ -237,8 +237,18 @@ func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) lambda(ir *Result) (interface{}, error) {
-	return s.ldaBridge.Run(newHelper(ir.Data))
+func (s *Server) lambda(r *Result) (interface{}, error) {
+	if obj, err := s.ldaBridge.Run(newHelper(r.Data)); err != nil {
+		r.SetErrored(err)
+	} else if data, err := ParseInterface(obj); err != nil {
+		r.SetErrored(err)
+	} else if data, err := data.Merge(r.Data); err != nil {
+		r.SetErrored(err)
+	} else {
+		r.SetCompleted()
+		r.Data = data
+	}
+	return r, nil
 }
 
 func (s *Server) logRequest(r *http.Request, json *JSON, code int, start time.Time) {
