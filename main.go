@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/utahta/go-openuri"
 	"io/ioutil"
+	"net/http"
 	"os"
 )
 
@@ -90,6 +91,20 @@ func (ja *JSON) Opts() *bridge.Opts {
 		Path:   ja.bridge.Path,
 		Port:   8080,
 		Lambda: true,
+	}
+}
+
+// Handler is the entrypoint for GCP functions
+func Handler(w http.ResponseWriter, r *http.Request) {
+	env := os.Getenv("BRIDGE")
+	if len(env) != 0 {
+		w.Write([]byte("No bridge set"))
+		return
+	} else if b, err := NewJSONBridges(env); err != nil {
+		w.Write([]byte(err.Error()))
+		return
+	} else {
+		bridge.NewServer(b...).Handler(w, r)
 	}
 }
 

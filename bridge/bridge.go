@@ -167,7 +167,6 @@ func NewServer(bridges ...Bridge) *Server {
 // platform is specified by the end user. Currently supporting:
 //  - Inbuilt http (default)
 //  - AWS Lambda (env LAMBDA=1)
-//  - GCP (env GCP=1)
 //
 // Port only has to be passed in if the inbuilt HTTP server is being used.
 //
@@ -175,7 +174,7 @@ func NewServer(bridges ...Bridge) *Server {
 // as long if exclusive paths are given.
 //
 // If multiple adaptors are included with lambda/gcp enabled, then the first bridge that
-// has it enabled will be given as the handler.
+// has it enabled will be given as the Handler.
 func (s *Server) Start(port ...int) {
 	if len(os.Getenv("LAMBDA")) > 0 {
 		lambda.Start(s.lambda)
@@ -183,7 +182,7 @@ func (s *Server) Start(port ...int) {
 		mux := http.NewServeMux()
 		for p, b := range s.pathMap {
 			logrus.WithField("path", p).WithField("bridge", b.Opts().Name).Info("Registering bridge")
-			mux.HandleFunc(p, s.handler)
+			mux.HandleFunc(p, s.Handler)
 		}
 		if len(port) == 0 {
 			logrus.Fatal("No port specified")
@@ -193,7 +192,7 @@ func (s *Server) Start(port ...int) {
 	}
 }
 
-func (s *Server) handler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 	var rt Result
 	start := time.Now()
 	cc := make(chan int, 1)
