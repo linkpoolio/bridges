@@ -1,0 +1,15 @@
+[
+  {
+    "name": "AlphaVantage",
+    "method": "GET",
+    "url": "https://www.alphavantage.co/query",
+    "auth": {
+      "type": "param",
+      "key": "apikey",
+      "env": "API_KEY"
+    },
+    "opts": {
+      "paramPassthrough": true
+    }
+  }
+]
