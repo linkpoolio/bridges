@@ -1,0 +1,20 @@
+sudo: required
+services:
+  - docker
+
+matrix:
+  include:
+    - language: go
+      go: "1.12"
+
+before_install:
+  - go get -u github.com/haya14busa/goverage
+
+install:
+  - GO111MODULE=on go get
+
+script:
+  - goverage -v -coverprofile=coverage.out ./...
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)

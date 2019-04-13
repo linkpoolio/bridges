@@ -42,7 +42,7 @@ func (cc *WolframAlpha) Run(h *bridge.Helper) (interface{}, error) {
 	)
 	val := strings.Split(string(b), " ")
 	i := h.GetIntParam("index")
-	if i > int64(len(val)) {
+	if i > int64(len(val)-1) {
 		return nil, errors.New("Invalid index")
 	}
 	return map[string]string{"result": val[i], "full": string(b), "unit": val[len(val)-1]}, err
