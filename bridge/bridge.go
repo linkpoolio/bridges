@@ -192,6 +192,8 @@ func (s *Server) Start(port ...int) {
 	}
 }
 
+// Hander is of http.Handler type, receiving any inbound requests from the HTTP server
+// when the bridge is ran local
 func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 	var rt Result
 	start := time.Now()
@@ -220,7 +222,7 @@ func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 	if b, ok := s.pathMap[r.URL.Path]; !ok {
 		cc <- http.StatusBadRequest
 		rt.SetErrored(errors.New("Invalid path"))
-	} else if obj, err := b.Run(newHelper(rt.Data)); err != nil {
+	} else if obj, err := b.Run(NewHelper(rt.Data)); err != nil {
 		cc <- http.StatusInternalServerError
 		rt.SetErrored(err)
 	} else if data, err := ParseInterface(obj); err != nil {
@@ -237,7 +239,7 @@ func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) lambda(r *Result) (interface{}, error) {
-	if obj, err := s.ldaBridge.Run(newHelper(r.Data)); err != nil {
+	if obj, err := s.ldaBridge.Run(NewHelper(r.Data)); err != nil {
 		r.SetErrored(err)
 	} else if data, err := ParseInterface(obj); err != nil {
 		r.SetErrored(err)
@@ -273,7 +275,7 @@ type Helper struct {
 	httpClient http.Client
 }
 
-func newHelper(data *JSON) *Helper {
+func NewHelper(data *JSON) *Helper {
 	return &Helper{Data: data, httpClient: http.Client{}}
 }
 
