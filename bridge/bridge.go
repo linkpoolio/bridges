@@ -46,16 +46,21 @@ type JSON struct {
 // ParseInterface attempts to coerce the input interface
 // and parse it into a JSON object.
 func ParseInterface(obj interface{}) (*JSON, error) {
-	var j JSON
 	b, err := json.Marshal(obj)
 	if err != nil {
 		return nil, err
 	}
+	return Parse(b)
+}
+
+// ParseInterface parse a bytes slice into a JSON object.
+func Parse(b []byte) (*JSON, error) {
+	var j JSON
 	str := string(b)
 	if len(str) == 0 {
 		str = `{}`
 	}
-	err = json.Unmarshal([]byte(str), &j)
+	err := json.Unmarshal([]byte(str), &j)
 	return &j, err
 }
 
@@ -175,21 +180,24 @@ func NewServer(bridges ...Bridge) *Server {
 //
 // If multiple adaptors are included with lambda/gcp enabled, then the first bridge that
 // has it enabled will be given as the Handler.
-func (s *Server) Start(port ...int) {
+func (s *Server) Start(port int) {
 	if len(os.Getenv("LAMBDA")) > 0 {
 		lambda.Start(s.lambda)
 	} else {
-		mux := http.NewServeMux()
-		for p, b := range s.pathMap {
-			logrus.WithField("path", p).WithField("bridge", b.Opts().Name).Info("Registering bridge")
-			mux.HandleFunc(p, s.Handler)
-		}
-		if len(port) == 0 {
-			logrus.Fatal("No port specified")
-		}
-		logrus.WithField("port", port[0]).Info("Starting the bridge server")
-		logrus.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port[0]), mux))
+		logrus.WithField("port", port).Info("Starting the bridge server")
+		logrus.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), s.Mux()))
 	}
+}
+
+// HTTPMux returns the http.Handler for the go http multiplexer, registering all the bridges paths
+// with the handler
+func (s *Server) Mux() http.Handler {
+	mux := http.NewServeMux()
+	for p, b := range s.pathMap {
+		logrus.WithField("path", p).WithField("bridge", b.Opts().Name).Info("Registering bridge")
+		mux.HandleFunc(p, s.Handler)
+	}
+	return mux
 }
 
 // Hander is of http.Handler type, receiving any inbound requests from the HTTP server
@@ -204,7 +212,7 @@ func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(code)
 		if err := json.NewEncoder(w).Encode(&rt); err != nil {
-			logrus.Error("Failed to encode response: %v", err)
+			logrus.Errorf("Failed to encode response: %v", err)
 		}
 		s.logRequest(r, rt.Data, code, start)
 	}()
@@ -259,7 +267,6 @@ func (s *Server) logRequest(r *http.Request, json *JSON, code int, start time.Ti
 		"code":     code,
 		"data":     json,
 		"path":     r.URL.Path,
-		"rawQuery": r.URL.RawQuery,
 		"clientIP": r.RemoteAddr,
 		"servedAt": end.Format("2006/01/02 - 15:04:05"),
 		"latency":  fmt.Sprintf("%v", end.Sub(start)),
