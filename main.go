@@ -69,10 +69,10 @@ func (ja *JSON) Run(h *bridge.Helper) (interface{}, error) {
 	r := make(map[string]interface{})
 	p := make(map[string]interface{})
 	f := make(map[string][]string)
-	for k, v := range ja.bridge.Opts.Param {
+	for k, v := range ja.bridge.Opts.Query {
 		p[k] = h.GetParam(fmt.Sprintf("%s", v))
 	}
-	ja.bridge.Opts.Param = p
+	ja.bridge.Opts.Query = p
 	for k, s := range ja.bridge.Opts.PostForm {
 		for _, v := range s {
 			f[k] = append(f[k], h.GetParam(v))
@@ -95,7 +95,6 @@ func (ja *JSON) Opts() *bridge.Opts {
 	return &bridge.Opts{
 		Name:   ja.bridge.Name,
 		Path:   ja.bridge.Path,
-		Port:   8080,
 		Lambda: true,
 	}
 }

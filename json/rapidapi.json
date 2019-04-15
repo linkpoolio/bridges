@@ -9,7 +9,7 @@
       "env": "API_KEY"
     },
     "opts": {
-      "paramPassthrough": true
+      "queryPassthrough": true
     }
   },
   {
@@ -22,7 +22,7 @@
       "env": "API_KEY"
     },
     "opts": {
-      "formPassthrough": true
+      "queryPassthrough": true
     }
   }
 ]
