@@ -1,13 +1,13 @@
 builds:
-- goos:
+- env:
+  - CGO_ENABLED=0
+  goos:
     - freebsd
     - windows
     - linux
-- goarch:
+  goarch:
     - amd64
     - arm64
-- env:
-  - CGO_ENABLED=0
 archive:
   replacements:
     darwin: Darwin
