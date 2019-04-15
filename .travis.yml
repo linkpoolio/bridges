@@ -11,7 +11,7 @@ before_install:
   - go get -u github.com/haya14busa/goverage
 
 install:
-  - GO111MODULE=on go get
+  - env GO111MODULE=on go build
 
 script:
   - goverage -v -coverprofile=coverage.out ./...
