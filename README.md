@@ -16,7 +16,6 @@ Bridges is a Chainlink adaptor framework, lowering the barrier of entry for anyo
 View the [releases page](https://github.com/linkpoolio/bridges/releases) and download the latest version for your
 operating system, then add it to PATH.
 
-
 ### Quick Usage
 
 For the simplest adaptor, run the following:
@@ -40,6 +39,16 @@ is equal to
 ```
 bridges -b json/rapidapi.json
 ```
+
+### Lambda Usage
+
+View the [releases page](https://github.com/linkpoolio/bridges/releases) and download the lambda zip. Upload this zip 
+into Lambda and set the handler as `bridges`.
+
+Then set the following environment variables:
+
+ - `LAMBDA=true`
+ - `BRIDGE=<your bridge url>`
 
 ### Examples
 
@@ -81,6 +90,12 @@ func main() {
 	bridge.NewServer(&MyAdaptor{}).Start(8080)
 }
 ```
+
+### TODO
+
+- [ ] Increase test coverage
+- [ ] Support S3 urls for adaptor fetching
+- [ ] Look at the validity of doing a Docker Hub style adaptor repository
 
 ### Contributing
 
