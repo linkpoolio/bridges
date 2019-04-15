@@ -14,7 +14,7 @@ before_install:
   - go get -u github.com/haya14busa/goverage
 
 install:
-  - go build
+  - go get
 
 script:
   - goverage -v -coverprofile=coverage.out ./...
