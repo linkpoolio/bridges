@@ -12,9 +12,6 @@ matrix:
 
 before_install:
   - go get -u github.com/haya14busa/goverage
-
-install:
-  - sudo snap install snapcraft --classic
   - go install
 
 script:
