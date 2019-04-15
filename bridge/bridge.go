@@ -11,7 +11,6 @@ import (
 	"gopkg.in/guregu/null.v3"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
 	"time"
 )
@@ -302,7 +301,6 @@ type CallOpts struct {
 	Query            map[string]interface{} `json:"query"`
 	QueryPassthrough bool                   `json:"queryPassthrough"`
 	Body             string                 `json:"body"`
-	PostForm         url.Values             `json:"postForm"`
 	ExpectedCode     int                    `json:"expectedCode"`
 }
 
