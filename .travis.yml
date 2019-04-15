@@ -11,8 +11,7 @@ matrix:
       go: "1.12"
 
 before_install:
-  - go get -u github.com/haya14busa/goverage
-  - go install
+  - go get github.com/haya14busa/goverage
 
 script:
   - goverage -v -coverprofile=coverage.out ./...
