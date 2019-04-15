@@ -45,13 +45,23 @@ bridges -b json/rapidapi.json
 
 ### Lambda Usage
 
-View the [releases page](https://github.com/linkpoolio/bridges/releases) and download the lambda zip. Upload this zip 
+View the [releases page](https://github.com/linkpoolio/bridges/releases) and download the Linux x86-64 zip. Upload the zip 
 into Lambda and set the handler as `bridges`.
 
 Then set the following environment variables:
 
  - `LAMBDA=true`
  - `BRIDGE=<your bridge url>`
+ 
+Since bridges queries the bridge URL each call, it's recommend to host your own JSON files in S3 for latency and 
+your own redundancy. This is not the case when running locally or using docker.
+ 
+### Docker Usage
+
+Run by either appending arguments or setting environment variables:
+```
+docker run -it linkpool/bridges:latest -b https://s3.linkpool.io/bridges/rapidapi.json
+```
 
 ### Examples
 
