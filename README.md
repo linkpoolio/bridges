@@ -2,6 +2,8 @@
   <img src="https://s3.linkpool.io/images/bridgestype.png">
 </p>
 
+[![Build Status](https://travis-ci.org/linkpoolio/bridges.svg?branch=master)](https://travis-ci.org/linkpoolio/bridges)
+[![codecov](https://codecov.io/gh/linkpoolio/bridges/branch/master/graph/badge.svg)](https://codecov.io/gh/linkpoolio/bridges)
 -----------------------
 
 Bridges is a Chainlink adaptor framework, lowering the barrier of entry for anyone to create their own:
