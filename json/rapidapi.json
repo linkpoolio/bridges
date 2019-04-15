@@ -1,0 +1,28 @@
+[
+  {
+    "name": "RapidAPI GET",
+    "method": "GET",
+    "path": "/get",
+    "auth": {
+      "type": "header",
+      "key": "X-RapidAPI-Key",
+      "env": "API_KEY"
+    },
+    "opts": {
+      "paramPassthrough": true
+    }
+  },
+  {
+    "name": "RapidAPI POST",
+    "method": "POST",
+    "path": "/post",
+    "auth": {
+      "type": "header",
+      "key": "X-RapidAPI-Key",
+      "env": "API_KEY"
+    },
+    "opts": {
+      "formPassthrough": true
+    }
+  }
+]

@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"github.com/jleeh/bridges/bridge"
+	"github.com/linkpoolio/bridges/bridge"
 	"net/http"
 	"os"
 	"strings"

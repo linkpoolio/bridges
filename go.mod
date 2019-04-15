@@ -1,4 +1,4 @@
-module github.com/jleeh/bridges
+module github.com/linkpoolio/bridges
 
 go 1.12
 

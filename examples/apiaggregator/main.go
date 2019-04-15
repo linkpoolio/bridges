@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/jleeh/bridges/bridge"
+	"github.com/linkpoolio/bridges/bridge"
 	"github.com/montanaflynn/stats"
 	"github.com/oliveagle/jsonpath"
 	"net/http"

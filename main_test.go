@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/jleeh/bridges/bridge"
+	"github.com/linkpoolio/bridges/bridge"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

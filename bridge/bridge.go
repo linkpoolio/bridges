@@ -214,7 +214,7 @@ func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewEncoder(w).Encode(&rt); err != nil {
 			logrus.Errorf("Failed to encode response: %v", err)
 		}
-		s.logRequest(r, rt.Data, code, start)
+		s.logRequest(r, code, start)
 	}()
 
 	if b, err := ioutil.ReadAll(r.Body); err != nil {
@@ -260,12 +260,11 @@ func (s *Server) lambda(r *Result) (interface{}, error) {
 	return r, nil
 }
 
-func (s *Server) logRequest(r *http.Request, json *JSON, code int, start time.Time) {
+func (s *Server) logRequest(r *http.Request, code int, start time.Time) {
 	end := time.Now()
 	logrus.WithFields(logrus.Fields{
 		"method":   r.Method,
 		"code":     code,
-		"data":     json,
 		"path":     r.URL.Path,
 		"clientIP": r.RemoteAddr,
 		"servedAt": end.Format("2006/01/02 - 15:04:05"),
@@ -303,6 +302,7 @@ type CallOpts struct {
 	Auth             Auth                   `json:"-"`
 	Param            map[string]interface{} `json:"param"`
 	ParamPassthrough bool                   `json:"paramPassthrough"`
+	FormPassthrough  bool                   `json:"formPassthrough"`
 	Body             string                 `json:"body"`
 	PostForm         url.Values             `json:"postForm"`
 	ExpectedCode     int                    `json:"expectedCode"`
@@ -337,9 +337,20 @@ func (h *Helper) HTTPCallRawWithOpts(method, url string, opts CallOpts) ([]byte,
 	if err != nil {
 		return nil, err
 	}
+	req.Header.Add("Content-Type", "application/json")
 
 	req.PostForm = opts.PostForm
-	req.Header.Add("Content-Type", "application/json")
+	if opts.FormPassthrough {
+		for k, v := range h.Data.Map() {
+			if v.IsArray() {
+				for _, v2 := range v.Array() {
+					req.PostForm[k] = append(req.PostForm[k], v2.String())
+				}
+			} else {
+				req.PostForm[k] = append(req.PostForm[k], v.String())
+			}
+		}
+	}
 	q := req.URL.Query()
 	if opts.ParamPassthrough {
 		for k, v := range h.Data.Map() {

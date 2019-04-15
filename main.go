@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jleeh/bridges/bridge"
+	"github.com/linkpoolio/bridges/bridge"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"github.com/utahta/go-openuri"
@@ -79,7 +79,13 @@ func (ja *JSON) Run(h *bridge.Helper) (interface{}, error) {
 		}
 	}
 	ja.bridge.Opts.PostForm = f
-	err := h.HTTPCallWithOpts(ja.bridge.Method, ja.bridge.URL, &r, ja.bridge.Opts)
+	var url string
+	if len(ja.bridge.URL) == 0 {
+		url = h.GetParam("url")
+	} else {
+		url = ja.bridge.URL
+	}
+	err := h.HTTPCallWithOpts(ja.bridge.Method, url, &r, ja.bridge.Opts)
 	return r, err
 }
 
