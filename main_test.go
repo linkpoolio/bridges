@@ -31,6 +31,9 @@ func TestNewJSONBridges(t *testing.T) {
 			"from_currency": "GBP",
 			"to_currency":   "EUR",
 		}, []string{"Error Message"}},
+		{"json/placeholder.json", "Placeholder", map[string]interface{}{
+			"page": 1,
+		}, []string{"page", "per_page", "total_pages"}},
 	}
 	for _, c := range cases {
 		t.Run(c.path, func(t *testing.T) {

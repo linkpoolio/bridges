@@ -1,0 +1,12 @@
+[
+  {
+    "name": "Placeholder",
+    "method": "GET",
+    "url": "https://reqres.in/api/users",
+    "opts": {
+      "query": {
+        "page": "page"
+      }
+    }
+  }
+]
