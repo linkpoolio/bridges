@@ -11,7 +11,6 @@ import (
 	"gopkg.in/guregu/null.v3"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"os"
 	"time"
 )
@@ -25,8 +24,7 @@ const (
 type Opts struct {
 	Name   string `json:"name"`
 	Path   string `json:"path"`
-	Lambda bool   `json:"lambda"`
-	Port   int    `json:"port"`
+	Lambda bool   `json:"Lambda"`
 }
 
 // Result represents a Chainlink JobRun
@@ -130,7 +128,7 @@ type Bridge interface {
 }
 
 // Server holds pointers to the bridges indexed by their paths
-// and the bridge to be mounted in lambda.
+// and the bridge to be mounted in Lambda.
 type Server struct {
 	pathMap   map[string]Bridge
 	ldaBridge Bridge
@@ -178,11 +176,11 @@ func NewServer(bridges ...Bridge) *Server {
 // If the inbuilt http server is being used, bridges can specify many external adaptors
 // as long if exclusive paths are given.
 //
-// If multiple adaptors are included with lambda/gcp enabled, then the first bridge that
+// If multiple adaptors are included with Lambda/gcp enabled, then the first bridge that
 // has it enabled will be given as the Handler.
 func (s *Server) Start(port int) {
 	if len(os.Getenv("LAMBDA")) > 0 {
-		lambda.Start(s.lambda)
+		lambda.Start(s.Lambda)
 	} else {
 		logrus.WithField("port", port).Info("Starting the bridge server")
 		logrus.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", port), s.Mux()))
@@ -246,7 +244,7 @@ func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) lambda(r *Result) (interface{}, error) {
+func (s *Server) Lambda(r *Result) (interface{}, error) {
 	if obj, err := s.ldaBridge.Run(NewHelper(r.Data)); err != nil {
 		r.SetErrored(err)
 	} else if data, err := ParseInterface(obj); err != nil {
@@ -300,11 +298,9 @@ func (h *Helper) GetIntParam(key string) int64 {
 // CallOpts are the options given into a http call method
 type CallOpts struct {
 	Auth             Auth                   `json:"-"`
-	Param            map[string]interface{} `json:"param"`
-	ParamPassthrough bool                   `json:"paramPassthrough"`
-	FormPassthrough  bool                   `json:"formPassthrough"`
+	Query            map[string]interface{} `json:"query"`
+	QueryPassthrough bool                   `json:"queryPassthrough"`
 	Body             string                 `json:"body"`
-	PostForm         url.Values             `json:"postForm"`
 	ExpectedCode     int                    `json:"expectedCode"`
 }
 
@@ -327,8 +323,8 @@ func (h *Helper) HTTPCallWithOpts(method, url string, obj interface{}, opts Call
 // HTTPCallRawWithOpts performs a HTTP call with any method and returns the raw byte body and any error
 // Supported options:
 //  - Authentication methods for the API (query param, headers)
-// 	- Query parameters via `opts.Param`
-//  - Passthrough through all json keys within the request `data` object via `opts.ParamPassthrough`
+// 	- Query parameters via `opts.Query`
+//  - Passthrough through all json keys within the request `data` object via `opts.QueryPassthrough`
 //  - Pass in a body to send with the request via `opts.Body`
 //  - Send in post form kv via `opts.PostForm`
 //  - Return an error if the returning http status code is different to `opts.ExpectedCode`
@@ -339,25 +335,13 @@ func (h *Helper) HTTPCallRawWithOpts(method, url string, opts CallOpts) ([]byte,
 	}
 	req.Header.Add("Content-Type", "application/json")
 
-	req.PostForm = opts.PostForm
-	if opts.FormPassthrough {
-		for k, v := range h.Data.Map() {
-			if v.IsArray() {
-				for _, v2 := range v.Array() {
-					req.PostForm[k] = append(req.PostForm[k], v2.String())
-				}
-			} else {
-				req.PostForm[k] = append(req.PostForm[k], v.String())
-			}
-		}
-	}
 	q := req.URL.Query()
-	if opts.ParamPassthrough {
+	if opts.QueryPassthrough {
 		for k, v := range h.Data.Map() {
 			q.Add(k, fmt.Sprintf("%s", v))
 		}
 	} else {
-		for k, v := range opts.Param {
+		for k, v := range opts.Query {
 			q.Add(k, fmt.Sprintf("%s", v))
 		}
 	}
@@ -398,7 +382,7 @@ func NewAuth(authType string, key string, value string) Auth {
 	return a
 }
 
-// Param is the Auth implementation that requires GET param set
+// Query is the Auth implementation that requires GET param set
 type Param struct {
 	Key   string
 	Value string

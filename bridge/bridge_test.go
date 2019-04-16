@@ -11,6 +11,23 @@ import (
 	"testing"
 )
 
+func TestJSON_Merge(t *testing.T) {
+	j1, err := ParseInterface(map[string]string{
+		"alice": "bob",
+		"carl": "dennis",
+	})
+	assert.Nil(t, err)
+	j2, err := ParseInterface(map[string]string{
+		"alice": "bob",
+		"eric": "fred",
+		"geoff": "harry",
+	})
+	j3, err := j1.Merge(j2)
+	assert.Nil(t, err)
+	assert.Equal(t, "bob", j3.Get("alice").String())
+	assert.Equal(t, "fred", j3.Get("eric").String())
+}
+
 // Copied from the example to use as a test fixture
 type CryptoCompare struct{}
 
@@ -231,4 +248,35 @@ func TestServer_Mux_CryptoCompare(t *testing.T) {
 	assert.True(t, ok)
 	_, ok = data["EUR"]
 	assert.True(t, ok)
+}
+
+func TestServer_Lambda_CryptoCompare(t *testing.T) {
+	s := NewServer(&CryptoCompare{})
+
+	r := &Result{}
+	r.JobRunID = "1234"
+
+	obj, err := s.Lambda(r)
+	assert.Nil(t, err)
+	json, err := ParseInterface(obj)
+	assert.Nil(t, err)
+
+	assert.Equal(t, "1234", json.Get("jobRunId").String())
+
+	data := json.Get("data").Map()
+	_, ok := data["USD"]
+	assert.True(t, ok)
+	_, ok = data["JPY"]
+	assert.True(t, ok)
+	_, ok = data["EUR"]
+	assert.True(t, ok)
+}
+
+func TestAuth_Header(t *testing.T) {
+	a := NewAuth(AuthHeader, "API-KEY", "key")
+	req, err := http.NewRequest(http.MethodGet, "http://test", nil)
+	assert.Nil(t, err)
+	a.Authenticate(req)
+
+	assert.Equal(t, "key", req.Header.Get("API-KEY"))
 }

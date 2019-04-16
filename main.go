@@ -68,17 +68,10 @@ func NewJSONBridges(uri string) ([]bridge.Bridge, error) {
 func (ja *JSON) Run(h *bridge.Helper) (interface{}, error) {
 	r := make(map[string]interface{})
 	p := make(map[string]interface{})
-	f := make(map[string][]string)
-	for k, v := range ja.bridge.Opts.Param {
+	for k, v := range ja.bridge.Opts.Query {
 		p[k] = h.GetParam(fmt.Sprintf("%s", v))
 	}
-	ja.bridge.Opts.Param = p
-	for k, s := range ja.bridge.Opts.PostForm {
-		for _, v := range s {
-			f[k] = append(f[k], h.GetParam(v))
-		}
-	}
-	ja.bridge.Opts.PostForm = f
+	ja.bridge.Opts.Query = p
 	var url string
 	if len(ja.bridge.URL) == 0 {
 		url = h.GetParam("url")
@@ -95,7 +88,6 @@ func (ja *JSON) Opts() *bridge.Opts {
 	return &bridge.Opts{
 		Name:   ja.bridge.Name,
 		Path:   ja.bridge.Path,
-		Port:   8080,
 		Lambda: true,
 	}
 }
@@ -103,7 +95,7 @@ func (ja *JSON) Opts() *bridge.Opts {
 // Handler is the entrypoint for GCP functions
 func Handler(w http.ResponseWriter, r *http.Request) {
 	env := os.Getenv("BRIDGE")
-	if len(env) != 0 {
+	if len(env) == 0 {
 		w.Write([]byte("No bridge set"))
 		return
 	} else if b, err := NewJSONBridges(env); err != nil {

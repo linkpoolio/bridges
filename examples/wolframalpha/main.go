@@ -35,7 +35,7 @@ func (cc *WolframAlpha) Run(h *bridge.Helper) (interface{}, error) {
 		"https://api.wolframalpha.com/v1/result",
 		bridge.CallOpts{
 			Auth: bridge.NewAuth(bridge.AuthParam, "appid", os.Getenv("APP_ID")),
-			Param: map[string]interface{}{
+			Query: map[string]interface{}{
 				"i": h.GetParam("query"),
 			},
 		},

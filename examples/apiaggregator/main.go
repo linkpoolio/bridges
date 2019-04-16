@@ -31,11 +31,11 @@ type Result struct {
 //  - `type` string Aggregation type to use
 // For example:
 // {
-//	  "api": [
+//    "api": [
 //        "https://www.bitstamp.net/api/v2/ticker/btcusd/",
 //        "https://api.pro.coinbase.com/products/btc-usd/ticker"
-//	  ],
-//	  "paths": ["$.last", "$.price"],
+//    ],
+//    "paths": ["$.last", "$.price"],
 //    "type": "median"
 // }
 type APIAggregator struct{}
