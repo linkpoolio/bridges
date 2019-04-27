@@ -183,6 +183,24 @@ func TestServer_Mux_BadPath(t *testing.T) {
 	assert.Equal(t, "errored", json.Get("status").String())
 }
 
+func TestServer_Mux_BadMethod(t *testing.T) {
+	b := &HelloWorld{}
+	mux := NewServer(b).Mux()
+
+	req, err := http.NewRequest(http.MethodGet, "/", nil)
+	assert.Nil(t, err)
+	rr := httptest.NewRecorder()
+
+	mux.ServeHTTP(rr, req)
+	body, err := ioutil.ReadAll(rr.Body)
+	assert.Nil(t, err)
+	json, err := Parse(body)
+	assert.Nil(t, err)
+
+	assert.Equal(t, http.StatusBadRequest, rr.Code)
+	assert.Equal(t, "errored", json.Get("status").String())
+}
+
 type ReturnError struct {}
 
 func (re *ReturnError) Run(h *Helper) (interface{}, error) {
