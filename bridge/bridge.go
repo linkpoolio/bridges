@@ -215,6 +215,11 @@ func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 		s.logRequest(r, code, start)
 	}()
 
+	if r.Method != http.MethodPost {
+		cc <- http.StatusBadRequest
+		rt.SetErrored(errors.New("Invalid request"))
+		return
+	}
 	if b, err := ioutil.ReadAll(r.Body); err != nil {
 		cc <- http.StatusInternalServerError
 		rt.SetErrored(err)
