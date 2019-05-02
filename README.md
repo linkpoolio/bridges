@@ -14,10 +14,19 @@ Bridges is a Chainlink adaptor framework, lowering the barrier of entry for anyo
 - Simple interface to implement your own custom adaptors that can do anything.
 - Supports running in serverless environments such as AWS Lambda & GCP functions.
 
-### Install
+## Contents
+1. [Install](#install)
+2. [Usage](#usage)
+2. [Testing your Bridge](#testing-your-bridge)
+3. [Chainlink Integration](#chainlink-integration)
+4. [Bridge JSON](#bridge-json)
+
+## Install
 
 View the [releases page](https://github.com/linkpoolio/bridges/releases) and download the latest version for your
 operating system, then add it to PATH.
+
+## Usage
 
 ### Quick Usage
 
@@ -63,7 +72,92 @@ Run by either appending arguments or setting environment variables:
 docker run -it linkpool/bridges:latest -b https://s3.linkpool.io/bridges/rapidapi.json
 ```
 
-### Examples
+## Testing your Bridge
+
+To test a bridge, you need to send a `POST` request to it in the Chainlink `RunResult` type. For example:
+
+Start your bridge:
+```
+bridges -b https://s3.linkpool.io/bridges/cryptocompare.json
+```
+
+Call it:
+```
+curl -X POST -d "{\"jobRunId\":\"1234\",\"data\":{\"key\":\"value\"}}" http://localhost:8080
+```
+
+Result:
+```json
+{
+   "jobRunId":"1234",
+   "status":"completed",
+   "error":null,
+   "pending":false,
+   "data":{
+      "EUR":140.88,
+      "JPY":17717.05,
+      "USD":159.77,
+      "key":"value"
+   }
+}
+```
+
+## Chainlink Integration
+
+Once you have a running bridge, you can then add the URL of the running bridge to your Chainlink node in the UI.
+
+1. Login to your Chainlink node
+2. Click "Bridges"
+3. Add a new bridge
+4. Enter your bridges URL, for example: `http://localhost:8080/`
+
+If your bridge has multiple paths or specifies a path other than `/`, you'll need to take that into account when adding 
+your bridge in Chainlink. For example, with the [RapidAPI](json/rapidapi.json) example, you'd have two URLs:
+
+- `http://localhost:8080/get`
+- `http://localhost:8080/post`
+
+## Bridge JSON
+
+Example JSON file below with all the fields set:
+```json
+[
+  {
+    "name": "Example",
+    "method": "POST",
+    "url": "http://exampleapi.com/endpoint",
+    "path": "/",
+    "auth": {
+      "type": "header",
+      "key": "X-API-KEY",
+      "env": "API_KEY"
+    },
+    "opts": {
+      "queryPassthrough": false,
+      "query": {
+        "key": "value"
+      },
+      "body": "{\"message\":\"Hello\"}",
+      "expectedCode": 200
+    }
+  }
+]
+```
+
+To then use this save it to file, for example `bridge.json`, then run:
+```
+bridges -b bridge.json
+```
+
+The resulting adaptor will perform the following API call, when called on `POST http://localhost:8080/`:
+
+- HTTP Method: `POST`
+- URL: `http://exampleapi.com/endpoint?key=value`
+- Body: `{"message":"Hello"}`
+
+It will then check to see if the status code returned was 200.
+
+## Examples
 
 JSON:
 
@@ -77,7 +171,7 @@ Interface implementations:
 - [API Aggregator](examples/apiaggregator): Aggregates multiple endpoints using mean/median/mode. 
 - [Wolfram Alpha](examples/wolframalpha): Short answers API, non-JSON, uses string splitting.
 
-### Implement your own
+## Implement your own
 
 ```go
 package main
