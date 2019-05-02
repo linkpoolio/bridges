@@ -17,9 +17,10 @@ Bridges is a Chainlink adaptor framework, lowering the barrier of entry for anyo
 ## Contents
 1. [Install](#install)
 2. [Usage](#usage)
-2. [Testing your Bridge](#testing-your-bridge)
-3. [Chainlink Integration](#chainlink-integration)
-4. [Bridge JSON](#bridge-json)
+3. [Managing API Keys](#managing-api-keys)
+4. [Testing your Bridge](#testing-your-bridge)
+5. [Chainlink Integration](#chainlink-integration)
+6. [Bridge JSON](#bridge-json)
 
 ## Install
 
@@ -52,10 +53,27 @@ is equal to
 bridges -b json/rapidapi.json
 ```
 
+## Managing API Keys
+
+Bridges supports passing in API keys on the bridge http calls. These api keys are fed in as environment variables
+on running bridges. For example:
+
+```
+API_KEY=my-api-key bridges -b https://s3.linkpool.io/bridges/rapidapi.json
+```
+
+It's recommended to use secret managers for storing API keys.
+
+#### Considerations
+**API key environment variables may not be named `API_KEY`.** Refer to the JSON file for each variable name,
+ in `auth.env`.
+
+Custom implementations of the bridges interface may also completely differ and not use environment variables.
+
 ### Lambda Usage
 
-View the [releases page](https://github.com/linkpoolio/bridges/releases) and download the Linux x86-64 zip. Upload the zip 
-into Lambda and set the handler as `bridges`.
+View the [releases page](https://github.com/linkpoolio/bridges/releases) and download the Linux x86-64 zip. Upload the 
+zip into Lambda and set the handler as `bridges`.
 
 Then set the following environment variables:
 
@@ -152,6 +170,7 @@ bridges -b bridge.json
 The resulting adaptor will perform the following API call, when called on `POST http://localhost:8080/`:
 
 - HTTP Method: `POST`
+- Header X-API-KEY: From environment variable `API_KEY`
 - URL: `http://exampleapi.com/endpoint?key=value`
 - Body: `{"message":"Hello"}`
 
