@@ -21,6 +21,7 @@ Bridges is a Chainlink adaptor framework, lowering the barrier of entry for anyo
 4. [Testing your Bridge](#testing-your-bridge)
 5. [Chainlink Integration](#chainlink-integration)
 6. [Bridge JSON](#bridge-json)
+7. [Examples](#examples)
 
 ## Install
 
