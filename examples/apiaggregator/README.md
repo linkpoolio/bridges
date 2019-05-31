@@ -48,7 +48,7 @@ To call the API, you need to send a POST request to `http://localhost:<port>/` w
 
 For example:
 ```bash
-curl -X POST http://localhost:8080/fetch \
+curl -X POST http://localhost:8080/ \
 -H 'Content-Type: application/json' \
 -d @- << EOF
 {
