@@ -190,6 +190,7 @@ Interface implementations:
 - [CryptoCompare](examples/cryptocompare): Simplest example.
 - [API Aggregator](examples/apiaggregator): Aggregates multiple endpoints using mean/median/mode. 
 - [Wolfram Alpha](examples/wolframalpha): Short answers API, non-JSON, uses string splitting.
+- [Asset Price](https://github.com/linkpoolio/asset-price-cl-ea): A more complex real example that aggregates crypto asset prices from multiple exchanges by weighted volume. 
 
 ## Implement your own
 
