@@ -11,23 +11,6 @@ import (
 	"testing"
 )
 
-func TestJSON_Merge(t *testing.T) {
-	j1, err := ParseInterface(map[string]string{
-		"alice": "bob",
-		"carl": "dennis",
-	})
-	assert.Nil(t, err)
-	j2, err := ParseInterface(map[string]string{
-		"alice": "bob",
-		"eric": "fred",
-		"geoff": "harry",
-	})
-	j3, err := j1.Merge(j2)
-	assert.Nil(t, err)
-	assert.Equal(t, "bob", j3.Get("alice").String())
-	assert.Equal(t, "fred", j3.Get("eric").String())
-}
-
 // Copied from the example to use as a test fixture
 type CryptoCompare struct{}
 

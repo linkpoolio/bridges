@@ -81,35 +81,6 @@ func (j *JSON) MarshalJSON() ([]byte, error) {
 	return []byte("{}"), nil
 }
 
-// Merge combines the given JSON with the existing JSON.
-func (j *JSON) Merge(j2 *JSON) (*JSON, error) {
-	if j2 == nil || j == nil {
-		return j, nil
-	}
-
-	if j.Type != gjson.JSON && j.Type != gjson.Null {
-		return nil, errors.New("Cannot merge response and request")
-	}
-
-	body := j.Map()
-	for key, value := range j2.Map() {
-		body[key] = value
-	}
-
-	cleaned := map[string]interface{}{}
-	for k, v := range body {
-		cleaned[k] = v.Value()
-	}
-
-	b, err := json.Marshal(cleaned)
-	if err != nil {
-		return nil, err
-	}
-
-	var rval *JSON
-	return rval, gjson.Unmarshal(b, &rval)
-}
-
 // SetCompleted marks a result as errored
 func (r *Result) SetErrored(err error) {
 	r.Status = "errored"
@@ -239,9 +210,6 @@ func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 	} else if data, err := ParseInterface(obj); err != nil {
 		cc <- http.StatusInternalServerError
 		rt.SetErrored(err)
-	} else if data, err := data.Merge(rt.Data); err != nil {
-		cc <- http.StatusInternalServerError
-		rt.SetErrored(err)
 	} else {
 		rt.Data = data
 		rt.SetCompleted()
@@ -253,8 +221,6 @@ func (s *Server) Lambda(r *Result) (interface{}, error) {
 	if obj, err := s.ldaBridge.Run(NewHelper(r.Data)); err != nil {
 		r.SetErrored(err)
 	} else if data, err := ParseInterface(obj); err != nil {
-		r.SetErrored(err)
-	} else if data, err := data.Merge(r.Data); err != nil {
 		r.SetErrored(err)
 	} else {
 		r.SetCompleted()
