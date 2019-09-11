@@ -33,8 +33,8 @@ func (cc *CryptoCompare) Opts() *Opts {
 
 func TestParseInterface_Map(t *testing.T) {
 	p := map[string]interface{}{
-			"alice": "bob",
-			"carl": "dennis",
+		"alice": "bob",
+		"carl":  "dennis",
 	}
 	json, err := ParseInterface(&p)
 	assert.Nil(t, err)
@@ -50,8 +50,7 @@ func TestParseInterface_String(t *testing.T) {
 	assert.Equal(t, "hello world", json.String())
 }
 
-
-type HelloWorld struct {}
+type HelloWorld struct{}
 
 func (tb *HelloWorld) Run(h *Helper) (interface{}, error) {
 	return `{ "key": "hello world" }`, nil
@@ -68,7 +67,7 @@ func TestNewServer_HelloWorld(t *testing.T) {
 	assert.Equal(t, b, s.pathMap["/"])
 }
 
-type LambdaPath struct {}
+type LambdaPath struct{}
 
 func (tb *LambdaPath) Run(h *Helper) (interface{}, error) {
 	return `{ "key": "hello world" }`, nil
@@ -77,7 +76,7 @@ func (tb *LambdaPath) Run(h *Helper) (interface{}, error) {
 func (tb *LambdaPath) Opts() *Opts {
 	return &Opts{
 		Lambda: true,
-		Path: "/path",
+		Path:   "/path",
 	}
 }
 
@@ -99,7 +98,7 @@ func TestServer_Mux(t *testing.T) {
 	mux := NewServer(b).Mux()
 
 	p := map[string]interface{}{
-		"jobRunId": "1234",
+		"id": "1234",
 	}
 	pb, err := json.Marshal(p)
 	assert.Nil(t, err)
@@ -147,7 +146,7 @@ func TestServer_Mux_BadPath(t *testing.T) {
 	mux := NewServer(b).Mux()
 
 	p := map[string]interface{}{
-		"jobRunId": "1234",
+		"id": "1234",
 	}
 	pb, err := json.Marshal(p)
 	assert.Nil(t, err)
@@ -184,7 +183,7 @@ func TestServer_Mux_BadMethod(t *testing.T) {
 	assert.Equal(t, "errored", json.Get("status").String())
 }
 
-type ReturnError struct {}
+type ReturnError struct{}
 
 func (re *ReturnError) Run(h *Helper) (interface{}, error) {
 	return `{}`, errors.New("error")
@@ -199,7 +198,7 @@ func TestServer_Mux_ReturnError(t *testing.T) {
 	mux := NewServer(b).Mux()
 
 	p := map[string]interface{}{
-		"jobRunId": "1234",
+		"id": "1234",
 	}
 	pb, err := json.Marshal(p)
 	assert.Nil(t, err)
@@ -223,7 +222,7 @@ func TestServer_Mux_CryptoCompare(t *testing.T) {
 	mux := NewServer(&CryptoCompare{}).Mux()
 
 	p := map[string]interface{}{
-		"jobRunId": "1234",
+		"id": "1234",
 	}
 	pb, err := json.Marshal(p)
 	assert.Nil(t, err)
