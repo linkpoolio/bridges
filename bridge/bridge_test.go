@@ -94,29 +94,53 @@ func TestNewServer_Nil(t *testing.T) {
 }
 
 func TestServer_Mux(t *testing.T) {
-	b := &HelloWorld{}
-	mux := NewServer(b).Mux()
-
-	p := map[string]interface{}{
-		"id": "1234",
+	tests := []struct {
+		name string
+		in   map[string]interface{}
+	}{
+		{
+			"input contains only id",
+			map[string]interface{}{
+				"id": "1234",
+			},
+		},
+		{
+			"input contains only jobRunId",
+			map[string]interface{}{
+				"jobRunId": "1234",
+			},
+		},
+		{
+			"input contains id and jobRunId",
+			map[string]interface{}{
+				"id":       "1234",
+				"jobRunId": "1234",
+			},
+		},
 	}
-	pb, err := json.Marshal(p)
-	assert.Nil(t, err)
 
-	req, err := http.NewRequest(http.MethodPost, "/", bytes.NewReader(pb))
-	assert.Nil(t, err)
-	rr := httptest.NewRecorder()
+	for _, test := range tests {
+		b := &HelloWorld{}
+		mux := NewServer(b).Mux()
 
-	mux.ServeHTTP(rr, req)
-	assert.Equal(t, http.StatusOK, rr.Code)
+		pb, err := json.Marshal(test.in)
+		assert.Nil(t, err)
 
-	body, err := ioutil.ReadAll(rr.Body)
-	assert.Nil(t, err)
-	json, err := Parse(body)
-	assert.Nil(t, err)
+		req, err := http.NewRequest(http.MethodPost, "/", bytes.NewReader(pb))
+		assert.Nil(t, err)
+		rr := httptest.NewRecorder()
 
-	assert.Equal(t, "1234", json.Get("jobRunId").String())
-	assert.Equal(t, "completed", json.Get("status").String())
+		mux.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusOK, rr.Code)
+
+		body, err := ioutil.ReadAll(rr.Body)
+		assert.Nil(t, err)
+		json, err := Parse(body)
+		assert.Nil(t, err)
+
+		assert.Equal(t, "1234", json.Get("jobRunId").String())
+		assert.Equal(t, "completed", json.Get("status").String())
+	}
 }
 
 func TestServer_Mux_InvalidJSON(t *testing.T) {
