@@ -96,7 +96,7 @@ func (r *Result) SetCompleted() {
 // SetJobRunID sets the request's ID to the result's Job Run ID.
 // If "jobRunId" is supplied in the request, use that for the response.
 func (r *Result) SetJobRunID() {
-	if r.JobRunID == "" {
+	if len(r.JobRunID) == 0 {
 		r.JobRunID = r.ID
 	}
 }
