@@ -33,8 +33,8 @@ func (cc *CryptoCompare) Opts() *Opts {
 
 func TestParseInterface_Map(t *testing.T) {
 	p := map[string]interface{}{
-			"alice": "bob",
-			"carl": "dennis",
+		"alice": "bob",
+		"carl":  "dennis",
 	}
 	json, err := ParseInterface(&p)
 	assert.Nil(t, err)
@@ -50,8 +50,7 @@ func TestParseInterface_String(t *testing.T) {
 	assert.Equal(t, "hello world", json.String())
 }
 
-
-type HelloWorld struct {}
+type HelloWorld struct{}
 
 func (tb *HelloWorld) Run(h *Helper) (interface{}, error) {
 	return `{ "key": "hello world" }`, nil
@@ -68,7 +67,7 @@ func TestNewServer_HelloWorld(t *testing.T) {
 	assert.Equal(t, b, s.pathMap["/"])
 }
 
-type LambdaPath struct {}
+type LambdaPath struct{}
 
 func (tb *LambdaPath) Run(h *Helper) (interface{}, error) {
 	return `{ "key": "hello world" }`, nil
@@ -77,7 +76,7 @@ func (tb *LambdaPath) Run(h *Helper) (interface{}, error) {
 func (tb *LambdaPath) Opts() *Opts {
 	return &Opts{
 		Lambda: true,
-		Path: "/path",
+		Path:   "/path",
 	}
 }
 
@@ -95,29 +94,53 @@ func TestNewServer_Nil(t *testing.T) {
 }
 
 func TestServer_Mux(t *testing.T) {
-	b := &HelloWorld{}
-	mux := NewServer(b).Mux()
-
-	p := map[string]interface{}{
-		"jobRunId": "1234",
+	tests := []struct {
+		name string
+		in   map[string]interface{}
+	}{
+		{
+			"input contains only id",
+			map[string]interface{}{
+				"id": "1234",
+			},
+		},
+		{
+			"input contains only jobRunId",
+			map[string]interface{}{
+				"jobRunId": "1234",
+			},
+		},
+		{
+			"input contains id and jobRunId",
+			map[string]interface{}{
+				"id":       "1234",
+				"jobRunId": "1234",
+			},
+		},
 	}
-	pb, err := json.Marshal(p)
-	assert.Nil(t, err)
 
-	req, err := http.NewRequest(http.MethodPost, "/", bytes.NewReader(pb))
-	assert.Nil(t, err)
-	rr := httptest.NewRecorder()
+	for _, test := range tests {
+		b := &HelloWorld{}
+		mux := NewServer(b).Mux()
 
-	mux.ServeHTTP(rr, req)
-	assert.Equal(t, http.StatusOK, rr.Code)
+		pb, err := json.Marshal(test.in)
+		assert.Nil(t, err)
 
-	body, err := ioutil.ReadAll(rr.Body)
-	assert.Nil(t, err)
-	json, err := Parse(body)
-	assert.Nil(t, err)
+		req, err := http.NewRequest(http.MethodPost, "/", bytes.NewReader(pb))
+		assert.Nil(t, err)
+		rr := httptest.NewRecorder()
 
-	assert.Equal(t, "1234", json.Get("jobRunId").String())
-	assert.Equal(t, "completed", json.Get("status").String())
+		mux.ServeHTTP(rr, req)
+		assert.Equal(t, http.StatusOK, rr.Code)
+
+		body, err := ioutil.ReadAll(rr.Body)
+		assert.Nil(t, err)
+		json, err := Parse(body)
+		assert.Nil(t, err)
+
+		assert.Equal(t, "1234", json.Get("jobRunId").String())
+		assert.Equal(t, "completed", json.Get("status").String())
+	}
 }
 
 func TestServer_Mux_InvalidJSON(t *testing.T) {
@@ -147,7 +170,7 @@ func TestServer_Mux_BadPath(t *testing.T) {
 	mux := NewServer(b).Mux()
 
 	p := map[string]interface{}{
-		"jobRunId": "1234",
+		"id": "1234",
 	}
 	pb, err := json.Marshal(p)
 	assert.Nil(t, err)
@@ -184,7 +207,7 @@ func TestServer_Mux_BadMethod(t *testing.T) {
 	assert.Equal(t, "errored", json.Get("status").String())
 }
 
-type ReturnError struct {}
+type ReturnError struct{}
 
 func (re *ReturnError) Run(h *Helper) (interface{}, error) {
 	return `{}`, errors.New("error")
@@ -199,7 +222,7 @@ func TestServer_Mux_ReturnError(t *testing.T) {
 	mux := NewServer(b).Mux()
 
 	p := map[string]interface{}{
-		"jobRunId": "1234",
+		"id": "1234",
 	}
 	pb, err := json.Marshal(p)
 	assert.Nil(t, err)
@@ -223,7 +246,7 @@ func TestServer_Mux_CryptoCompare(t *testing.T) {
 	mux := NewServer(&CryptoCompare{}).Mux()
 
 	p := map[string]interface{}{
-		"jobRunId": "1234",
+		"id": "1234",
 	}
 	pb, err := json.Marshal(p)
 	assert.Nil(t, err)

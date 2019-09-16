@@ -30,6 +30,7 @@ type Opts struct {
 // Result represents a Chainlink JobRun
 type Result struct {
 	JobRunID string      `json:"jobRunId"`
+	ID       string      `json:"id"`
 	Status   string      `json:"status"`
 	Error    null.String `json:"error"`
 	Pending  bool        `json:"pending"`
@@ -90,6 +91,14 @@ func (r *Result) SetErrored(err error) {
 // SetCompleted marks a result as completed
 func (r *Result) SetCompleted() {
 	r.Status = "completed"
+}
+
+// SetJobRunID sets the request's ID to the result's Job Run ID.
+// If "jobRunId" is supplied in the request, use that for the response.
+func (r *Result) SetJobRunID() {
+	if len(r.JobRunID) == 0 {
+		r.JobRunID = r.ID
+	}
 }
 
 // Bridge is the interface that can be implemented for custom Chainlink bridges
@@ -200,6 +209,8 @@ func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 		rt.SetErrored(err)
 		return
 	}
+
+	rt.SetJobRunID()
 
 	if b, ok := s.pathMap[r.URL.Path]; !ok {
 		cc <- http.StatusBadRequest

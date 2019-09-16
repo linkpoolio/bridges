@@ -78,7 +78,7 @@ func TestNewJSONBridges_Errors(t *testing.T) {
 
 func TestHandler(t *testing.T) {
 	p := map[string]interface{}{
-		"jobRunId": "1234",
+		"id": "1234",
 	}
 	pb, err := json.Marshal(p)
 	assert.Nil(t, err)
@@ -112,7 +112,7 @@ func TestHandler(t *testing.T) {
 
 func TestHandler_NilBridge(t *testing.T) {
 	p := map[string]interface{}{
-		"jobRunId": "1234",
+		"id": "1234",
 	}
 	pb, err := json.Marshal(p)
 	assert.Nil(t, err)
@@ -135,7 +135,7 @@ func TestHandler_NilBridge(t *testing.T) {
 
 func TestHandler_InvalidBridge(t *testing.T) {
 	p := map[string]interface{}{
-		"jobRunId": "1234",
+		"id": "1234",
 	}
 	pb, err := json.Marshal(p)
 	assert.Nil(t, err)
