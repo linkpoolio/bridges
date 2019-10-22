@@ -1,14 +1,14 @@
 package main
 
 import (
-	"github.com/linkpoolio/bridges/bridge"
+	"github.com/linkpoolio/bridges"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestCryptoCompare_Run(t *testing.T) {
 	cc := CryptoCompare{}
-	obj, err := cc.Run(bridge.NewHelper(nil))
+	obj, err := cc.Run(bridges.NewHelper(nil))
 	assert.Nil(t, err)
 
 	resp, ok := obj.(map[string]interface{})

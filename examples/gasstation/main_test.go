@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/linkpoolio/bridges/bridge"
+	"github.com/linkpoolio/bridges"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -9,7 +9,7 @@ import (
 func TestGasStation_Run(t *testing.T) {
 	wa := GasStation{}
 
-	h := bridge.NewHelper(&bridge.JSON{})
+	h := bridges.NewHelper(&bridges.JSON{})
 	val, err := wa.Run(h)
 
 	avg, ok := val.(float64)
@@ -24,3 +24,4 @@ func TestGasStation_Opts(t *testing.T) {
 	assert.Equal(t, opts.Name, "GasStation")
 	assert.True(t, opts.Lambda)
 }
+

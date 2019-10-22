@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/linkpoolio/bridges/bridge"
+	"github.com/linkpoolio/bridges"
 	"net/http"
 )
 
@@ -10,7 +10,7 @@ import (
 type CryptoCompare struct{}
 
 // Run is the bridge.Bridge Run implementation that returns the price response
-func (cc *CryptoCompare) Run(h *bridge.Helper) (interface{}, error) {
+func (cc *CryptoCompare) Run(h *bridges.Helper) (interface{}, error) {
 	r := make(map[string]interface{})
 	err := h.HTTPCall(
 		http.MethodGet,
@@ -21,13 +21,13 @@ func (cc *CryptoCompare) Run(h *bridge.Helper) (interface{}, error) {
 }
 
 // Opts is the bridge.Bridge implementation
-func (cc *CryptoCompare) Opts() *bridge.Opts {
-	return &bridge.Opts{
+func (cc *CryptoCompare) Opts() *bridges.Opts {
+	return &bridges.Opts{
 		Name:   "CryptoCompare",
 		Lambda: true,
 	}
 }
 
 func main() {
-	bridge.NewServer(&CryptoCompare{}).Start(8080)
+	bridges.NewServer(&CryptoCompare{}).Start(8080)
 }

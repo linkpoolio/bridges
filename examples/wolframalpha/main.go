@@ -2,7 +2,7 @@ package main
 
 import (
 	"errors"
-	"github.com/linkpoolio/bridges/bridge"
+	"github.com/linkpoolio/bridges"
 	"net/http"
 	"os"
 	"strings"
@@ -29,12 +29,12 @@ import (
 type WolframAlpha struct{}
 
 // Run implements Bridge Run for querying the Wolfram short answers API
-func (cc *WolframAlpha) Run(h *bridge.Helper) (interface{}, error) {
+func (cc *WolframAlpha) Run(h *bridges.Helper) (interface{}, error) {
 	b, err := h.HTTPCallRawWithOpts(
 		http.MethodGet,
 		"https://api.wolframalpha.com/v1/result",
-		bridge.CallOpts{
-			Auth: bridge.NewAuth(bridge.AuthParam, "appid", os.Getenv("APP_ID")),
+		bridges.CallOpts{
+			Auth: bridges.NewAuth(bridges.AuthParam, "appid", os.Getenv("APP_ID")),
 			Query: map[string]interface{}{
 				"i": h.GetParam("query"),
 			},
@@ -49,13 +49,13 @@ func (cc *WolframAlpha) Run(h *bridge.Helper) (interface{}, error) {
 }
 
 // Opts is the bridge.Bridge implementation
-func (cc *WolframAlpha) Opts() *bridge.Opts {
-	return &bridge.Opts{
+func (cc *WolframAlpha) Opts() *bridges.Opts {
+	return &bridges.Opts{
 		Name:   "WolframAlpha",
 		Lambda: true,
 	}
 }
 
 func main() {
-	bridge.NewServer(&WolframAlpha{}).Start(8080)
+	bridges.NewServer(&WolframAlpha{}).Start(8080)
 }

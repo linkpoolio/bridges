@@ -1,7 +1,0 @@
-[
-  {
-    "name": "CryptoCompare",
-    "method": "GET",
-    "url": "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD,JPY,EUR"
-  }
-]
