@@ -278,7 +278,7 @@ func TestServer_Lambda_CryptoCompare(t *testing.T) {
 	s := NewServer(&CryptoCompare{})
 
 	r := &Result{}
-	r.JobRunID = "1234"
+	r.ID = "1234"
 
 	obj, err := s.Lambda(r)
 	assert.Nil(t, err)

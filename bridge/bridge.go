@@ -229,6 +229,8 @@ func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) Lambda(r *Result) (interface{}, error) {
+	r.SetJobRunID()
+
 	if obj, err := s.ldaBridge.Run(NewHelper(r.Data)); err != nil {
 		r.SetErrored(err)
 	} else if data, err := ParseInterface(obj); err != nil {
