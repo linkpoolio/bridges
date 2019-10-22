@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/linkpoolio/bridges/bridge"
+	"github.com/linkpoolio/bridges"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -25,10 +25,10 @@ func TestWolframAlpha_Run(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			json, err := bridge.ParseInterface(c.data)
+			json, err := bridges.ParseInterface(c.data)
 			assert.Nil(t, err)
 
-			h := bridge.NewHelper(json)
+			h := bridges.NewHelper(json)
 			_, err = wa.Run(h)
 
 			assert.Equal(t, c.error, err.Error())

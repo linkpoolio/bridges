@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/linkpoolio/bridges/bridge"
+	"github.com/linkpoolio/bridges"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -25,10 +25,10 @@ func TestAPIAggregator_Run(t *testing.T) {
 				"type": at,
 			}
 
-			json, err := bridge.ParseInterface(p)
+			json, err := bridges.ParseInterface(p)
 			assert.Nil(t, err)
 
-			h := bridge.NewHelper(json)
+			h := bridges.NewHelper(json)
 			obj, err := aa.Run(h)
 			assert.Nil(t, err)
 
@@ -45,10 +45,10 @@ func TestAPIAggregator_Run(t *testing.T) {
 func TestFetch_EmptyParam(t *testing.T) {
 	p := map[string]interface{}{}
 	aa := APIAggregator{}
-	json, err := bridge.ParseInterface(p)
+	json, err := bridges.ParseInterface(p)
 	assert.Nil(t, err)
 
-	h := bridge.NewHelper(json)
+	h := bridges.NewHelper(json)
 	_, err = aa.Run(h)
 
 	assert.Equal(t, err.Error(), "Invalid api and path array")
@@ -66,10 +66,10 @@ func TestFetch_InvalidArray(t *testing.T) {
 		"type": "mode",
 	}
 	aa := APIAggregator{}
-	json, err := bridge.ParseInterface(p)
+	json, err := bridges.ParseInterface(p)
 	assert.Nil(t, err)
 
-	h := bridge.NewHelper(json)
+	h := bridges.NewHelper(json)
 	_, err = aa.Run(h)
 
 	assert.Equal(t, err.Error(), "Invalid api and path array")

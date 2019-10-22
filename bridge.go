@@ -1,4 +1,4 @@
-package bridge
+package bridges
 
 import (
 	"bytes"

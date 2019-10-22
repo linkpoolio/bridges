@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/linkpoolio/bridges/bridge"
+	"github.com/linkpoolio/bridges"
 	"github.com/montanaflynn/stats"
 	"github.com/oliveagle/jsonpath"
 	"net/http"
@@ -41,7 +41,7 @@ type Result struct {
 type APIAggregator struct{}
 
 // Run is the bridge.Bridge Run implementation that returns the aggregated result
-func (cc *APIAggregator) Run(h *bridge.Helper) (interface{}, error) {
+func (cc *APIAggregator) Run(h *bridges.Helper) (interface{}, error) {
 	al := len(h.Data.Get("api").Array())
 	pl := len(h.Data.Get("paths").Array())
 
@@ -84,19 +84,19 @@ func (cc *APIAggregator) Run(h *bridge.Helper) (interface{}, error) {
 }
 
 // Opts is the bridge.Bridge implementation
-func (cc *APIAggregator) Opts() *bridge.Opts {
-	return &bridge.Opts{
+func (cc *APIAggregator) Opts() *bridges.Opts {
+	return &bridges.Opts{
 		Name:   "APIAggregator",
 		Lambda: true,
 	}
 }
 
 func main() {
-	bridge.NewServer(&APIAggregator{}).Start(8080)
+	bridges.NewServer(&APIAggregator{}).Start(8080)
 }
 
 func performRequest(
-	h *bridge.Helper,
+	h *bridges.Helper,
 	wg *sync.WaitGroup,
 	api string,
 	path string,
