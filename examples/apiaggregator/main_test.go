@@ -15,11 +15,11 @@ func TestAPIAggregator_Run(t *testing.T) {
 		t.Run(at, func(t *testing.T) {
 			p := map[string]interface{}{
 				"api": []string{
-					"https://www.bitstamp.net/api/v2/ticker/btcusd/",
+					"https://www.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
 					"https://api.pro.coinbase.com/products/btc-usd/ticker",
 				},
 				"paths": []string{
-					"$.last",
+					"$.price",
 					"$.price",
 				},
 				"type": at,
@@ -57,7 +57,7 @@ func TestFetch_EmptyParam(t *testing.T) {
 func TestFetch_InvalidArray(t *testing.T) {
 	p := map[string]interface{}{
 		"api": []string{
-			"https://www.bitstamp.net/api/v2/ticker/btcusd/",
+			"https://www.binance.com/api/v3/ticker/price?symbol=BTCUSDT",
 			"https://api.pro.coinbase.com/products/btc-usd/ticker",
 		},
 		"paths": []string{
