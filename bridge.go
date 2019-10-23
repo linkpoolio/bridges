@@ -29,12 +29,13 @@ type Opts struct {
 
 // Result represents a Chainlink JobRun
 type Result struct {
-	JobRunID string      `json:"jobRunId"`
-	ID       string      `json:"id,omitempty"`
-	Status   string      `json:"status"`
-	Error    null.String `json:"error"`
-	Pending  bool        `json:"pending"`
-	Data     *JSON       `json:"data"`
+	JobRunID  string      `json:"jobRunId"`
+	ID        string      `json:"id,omitempty"`
+	TaskRunID string      `json:"taskRunId,omitempty"`
+	Status    string      `json:"status"`
+	Error     null.String `json:"error"`
+	Pending   bool        `json:"pending"`
+	Data      *JSON       `json:"data"`
 }
 
 // Based on https://github.com/smartcontractkit/chainlink/blob/master/core/store/models/common.go#L128
