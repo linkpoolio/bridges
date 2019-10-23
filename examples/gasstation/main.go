@@ -7,7 +7,7 @@ import (
 
 type GasStation struct{}
 
-// Run implements Bridge Run for querying the Wolfram short answers API
+// Run implements Bridge Run for querying the ETH Gas Station
 func (gs *GasStation) Run(h *bridges.Helper) (interface{}, error) {
 	obj := make(map[string]interface{})
 	err := h.HTTPCall(
