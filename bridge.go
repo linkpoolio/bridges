@@ -213,7 +213,7 @@ func (s *Server) Handler(w http.ResponseWriter, r *http.Request) {
 
 	rt.SetJobRunID()
 
-	if b, ok := s.pathMap[r.URL.Path]; !ok {
+	if b, ok := s.pathMap[s.path(r)]; !ok {
 		cc <- http.StatusBadRequest
 		rt.SetErrored(errors.New("Invalid path"))
 	} else if obj, err := b.Run(NewHelper(rt.Data)); err != nil {
@@ -253,6 +253,16 @@ func (s *Server) logRequest(r *http.Request, code int, start time.Time) {
 		"servedAt": end.Format("2006/01/02 - 15:04:05"),
 		"latency":  fmt.Sprintf("%v", end.Sub(start)),
 	}).Info("Bridge request")
+}
+
+// Transformative logic to prepare the path, as if it's empty, it needs
+// setting to the root "/" path
+func (s *Server) path(r *http.Request) string {
+	path := r.URL.Path
+	if len(path) == 0 {
+		path = "/"
+	}
+	return path
 }
 
 // Helper is given to the receiving bridge to use on run, giving the
