@@ -47,7 +47,7 @@ After you've completed implementing your bridge, you can then test it in AWS Lam
     ```
 2. Add the file to a ZIP archive:
     ```bash
-    zip bridge.zip ./bridge:q
+    zip bridge.zip ./bridge
     ```
 3. Upload the the zip file into AWS and then use `bridge` as the
 handler.
