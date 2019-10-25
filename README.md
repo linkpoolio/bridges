@@ -47,7 +47,7 @@ After you've completed implementing your bridge, you can then test it in AWS Lam
     ```
 2. Add the file to a ZIP archive:
     ```bash
-    zip bridge.zip ./bridge
+    zip bridge.zip ./bridge:q
     ```
 3. Upload the the zip file into AWS and then use `bridge` as the
 handler.
@@ -55,16 +55,23 @@ handler.
 the adaptor to be compatible with Lambda.
 
 ## Running in GCP Functions
-To support GCP within your bridge, you need to add an extra function into your bridge as the entrypoint:
-```go
-func Handler(w http.ResponseWriter, r *http.Request) {
-	bridges.NewServer(&Example{}).Handler(w, r)
-}
-```
+Due to the difference in running Go within GCP Functions, it requires specific considerations for it be supported 
+within your bridge:
+- Bridge implementation cannot be within the `main` package
+- An extra `Handler` function within your implementation:
+    ```go
+    func Handler(w http.ResponseWriter, r *http.Request) {
+        bridges.NewServer(&Example{}).Handler(w, r)
+    }
+    ```
+- A `go.mod` and `go.sum` within the sub-package that contains the `Handler` function
+
+For an example implementation for GCP Functions, view the 
+[asset price adapter](https://github.com/linkpoolio/asset-price-cl-ea).
 
 You can then use the gcloud CLI tool to deploy it, for example:
 ```bash
-gcloud functions deploy bridge --runtime go111 --entry-point Handler
+gcloud functions deploy bridge --runtime go111 --entry-point Handler --trigger-http
 ```
 
 ## Example Implementations
