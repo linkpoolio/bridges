@@ -43,7 +43,7 @@ After you've completed implementing your bridge, you can then test it in AWS Lam
 
 1. Build the executable:
     ```bash
-    GO111MODULE=on go build -o bridge
+    GO111MODULE=on GOOS=linux GOARCH=amd64 go build -o bridge
     ```
 2. Add the file to a ZIP archive:
     ```bash
