@@ -2,6 +2,7 @@ package bridges
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -301,13 +302,21 @@ type CallOpts struct {
 
 // HTTPCall performs a basic http call with no options
 func (h *Helper) HTTPCall(method, url string, obj interface{}) error {
-	return h.HTTPCallWithOpts(method, url, obj, CallOpts{})
+	return h.HTTPCallWithContext(context.Background(), method, url, obj)
+}
+
+func (h *Helper) HTTPCallWithContext(ctx context.Context, method, url string, obj interface{}) error {
+	return h.HTTPCallWithOptsWithContext(ctx, method, url, obj, CallOpts{})
 }
 
 // HTTPCallWithOpts mirrors HTTPCallRawWithOpts bar the returning byte body is unmarshalled into
 // a given object pointer
 func (h *Helper) HTTPCallWithOpts(method, url string, obj interface{}, opts CallOpts) error {
-	if b, err := h.HTTPCallRawWithOpts(method, url, opts); err != nil {
+	return h.HTTPCallWithOptsWithContext(context.Background(), method, url, obj, opts)
+}
+
+func (h *Helper) HTTPCallWithOptsWithContext(ctx context.Context, method, url string, obj interface{}, opts CallOpts) error {
+	if b, err := h.HTTPCallRawWithOptsWithContext(ctx, method, url, opts); err != nil {
 		return err
 	} else if err := json.Unmarshal(b, obj); err != nil {
 		return err
@@ -324,7 +333,11 @@ func (h *Helper) HTTPCallWithOpts(method, url string, obj interface{}, opts Call
 //  - Send in post form kv via `opts.PostForm`
 //  - Return an error if the returning http status code is different to `opts.ExpectedCode`
 func (h *Helper) HTTPCallRawWithOpts(method, url string, opts CallOpts) ([]byte, error) {
-	req, err := http.NewRequest(method, url, bytes.NewReader([]byte(opts.Body)))
+	return h.HTTPCallRawWithOptsWithContext(context.Background(), method, url, opts)
+}
+
+func (h *Helper) HTTPCallRawWithOptsWithContext(ctx context.Context, method, url string, opts CallOpts) ([]byte, error) {
+	req, err := http.NewRequestWithContext(ctx, method, url, bytes.NewReader([]byte(opts.Body)))
 	if err != nil {
 		return nil, err
 	}
