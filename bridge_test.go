@@ -2,6 +2,7 @@ package bridges
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/stretchr/testify/assert"
@@ -9,6 +10,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 // Copied from the example to use as a test fixture
@@ -303,4 +305,44 @@ func TestAuth_Header(t *testing.T) {
 	a.Authenticate(req)
 
 	assert.Equal(t, "key", req.Header.Get("API-KEY"))
+}
+
+// Copied from the example to use as a test fixture
+type Timeout struct{}
+
+func (t *Timeout) Run(h *Helper) (interface{}, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Second)
+	defer cancel()
+
+	var r interface{}
+	err := h.HTTPCallWithContext(
+		ctx,
+		http.MethodGet,
+		"https://httpstat.us/200?sleep=4000",
+		&r,
+	)
+
+	return r, err
+}
+
+func (t *Timeout) Opts() *Opts {
+	return &Opts{
+		Name:   "Timeout",
+		Lambda: true,
+	}
+}
+
+func TestServer_Lambda_Timeout(t *testing.T) {
+	s := NewServer(&Timeout{})
+
+	r := &Result{}
+	r.ID = "1234"
+
+	start := time.Now()
+
+	_, err := s.Lambda(r)
+	assert.Nil(t, err)
+
+	diff := time.Since(start)
+	assert.Less(t, int64(diff), int64(2*time.Second))
 }
