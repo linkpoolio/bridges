@@ -298,6 +298,7 @@ type CallOpts struct {
 	QueryPassthrough bool                   `json:"queryPassthrough"`
 	Body             string                 `json:"body"`
 	ExpectedCode     int                    `json:"expectedCode"`
+	ContentType      string                 `json:"ContentType"`
 }
 
 // HTTPCall performs a basic http call with no options
@@ -341,7 +342,12 @@ func (h *Helper) HTTPCallRawWithOptsWithContext(ctx context.Context, method, url
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Content-Type", "application/json")
+
+	if len(opts.ContentType) == 0 {
+		req.Header.Add("Content-Type", "application/json")
+	} else {
+		req.Header.Add("Content-Type", opts.ContentType)
+	}
 
 	q := req.URL.Query()
 	if opts.QueryPassthrough {
