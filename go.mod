@@ -8,6 +8,6 @@ require (
 	github.com/oliveagle/jsonpath v0.0.0-20180606110733-2e52cf6e6852
 	github.com/sirupsen/logrus v1.4.2
 	github.com/stretchr/testify v1.4.0
-	github.com/tidwall/gjson v1.3.2
+	github.com/tidwall/gjson v1.9.3
 	gopkg.in/guregu/null.v3 v3.4.0
 )
